@@ -1,4 +1,4 @@
-ARG php_version=7.2
+ARG php_version=7.3
 FROM php:${php_version}-fpm
 
 ENV PHP_EXTRA_CONFIGURE_ARGS --enable-fpm --with-fpm-user=webuser --with-fpm-group=nginx --disable-cgi
@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y \
   libpng-dev \
   libxml2-dev \
   libxslt-dev \
-  mysql-client \
+  libzip-dev \
+  default-mysql-client \
   mydumper \
   nano \
   openssh-client \
@@ -35,7 +36,7 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
   && docker-php-ext-install soap sockets tokenizer xml xmlwriter xsl zip
 
 # xdebug comes from pecl
-RUN pecl install xdebug-2.6.0
+RUN pecl install xdebug-beta
 
 # zlib has a broken bit - workaround https://github.com/docker-library/php/issues/233#issuecomment-288727629
 RUN docker-php-ext-install zlib; exit 0
@@ -47,7 +48,7 @@ RUN docker-php-ext-install zlib
 COPY config/php.ini /usr/local/etc/php/php.ini
   
 # Node Setup
-RUN curl -sS https://deb.nodesource.com/setup_6.x | bash
+RUN curl -sS https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install -y nodejs
 
 # Gulp setup
@@ -66,7 +67,7 @@ WORKDIR /root/
 RUN curl -sS https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz -o ioncube_loader.tgz
 RUN tar -zxvf ioncube_loader.tgz
 WORKDIR /root/ioncube
-RUN cp ioncube_loader_lin_7.2.so /usr/local/lib/php/extensions/no-debug-non-zts-20170718/ioncube_loader_lin_7.2.so
+RUN cp ioncube_loader_lin_7.3.so /usr/local/lib/php/extensions/no-debug-non-zts-20180731/ioncube_loader_lin_7.3.so
 WORKDIR /root/
 RUN rm -rf ioncube*
 
